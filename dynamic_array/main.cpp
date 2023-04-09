@@ -69,7 +69,7 @@ Vector::Vector() {
 void Vector::Push(int input) {
   if (capacity_ == size_) {
 
-    capacity_ = capacity_ * 2;
+    Resize(capacity_ * 2); 
     data_[size_++] = input;
 
   } else {
