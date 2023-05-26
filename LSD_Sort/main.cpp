@@ -3,13 +3,12 @@
 //
 #include <cstdint>
 #include <iostream>
-#include <vector>
 
 class LSDRadixSort {
 public:
     static void Sort(long long* arr, int size) {
         const int kBits = 64;
-        const int kRadix = 10;
+        const int kRadix = 8;
 
         long long* temp[kRadix];
         for (auto& i : temp) {
@@ -61,5 +60,3 @@ int main() {
 
     return 0;
 }
-
-
