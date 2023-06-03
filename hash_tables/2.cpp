@@ -8,7 +8,7 @@
 class HashTable {
 public:
     HashTable();
-    [[nodiscard]] int Hash(int key) const;
+    int Hash(int key);
     void Insert(int key);
     int Search(int key);
     void Remove(int key);
@@ -19,8 +19,8 @@ private:
     std::vector<int> Hash_table_;
     int capacity_;
     int size_;
-    [[nodiscard]] int GetNextIndex(int index) const;
-    [[nodiscard]] double GetLoadFactor() const;
+    int GetNextIndex(int index);
+    double GetLoadFactor();
 };
 
 HashTable::HashTable() {
@@ -29,15 +29,13 @@ HashTable::HashTable() {
     size_ = 0;
 }
 
-int HashTable::Hash(int key) const {
-    key=std::abs(key);
-    return key & (capacity_ - 1); }
+int HashTable::Hash(int key) { return key & (capacity_ - 1); }
 
-int HashTable::GetNextIndex(int index) const {
+int HashTable::GetNextIndex(int index) {
     return (index + 1) & (capacity_ - 1);  // Use bitwise AND instead of modulo
 }
 
-double HashTable::GetLoadFactor() const {
+double HashTable::GetLoadFactor() {
     return static_cast<double>(size_) / capacity_;
 }
 
@@ -61,6 +59,7 @@ void HashTable::Insert(int key) {
     Hash_table_[index] = key;
     size_++;
 }
+
 int HashTable::Search(int key) {
     int index = Hash(key);
     int start_index = index;
@@ -70,12 +69,11 @@ int HashTable::Search(int key) {
         }
         index = GetNextIndex(index);
         if (index == start_index) {
-            return -1;
+            break;
         }
     }
     return -1;
 }
-
 
 void HashTable::Remove(int key) {
     int index = Search(key);
@@ -84,6 +82,7 @@ void HashTable::Remove(int key) {
         size_--;
     }
 }
+
 void HashTable::ResizeTable() {
     int new_capacity = capacity_ * 2;
     std::vector<int> new_table(new_capacity, -1);
@@ -101,8 +100,7 @@ void HashTable::ResizeTable() {
     capacity_ = new_capacity;
 }
 
-
-HashTable::~HashTable() = default;
+HashTable::~HashTable() {}
 
 int main() {
     HashTable ht;
@@ -122,9 +120,9 @@ int main() {
             ht.Remove(number);
         } else if (operation == '?') {
             if (ht.Search(number) != -1) {
-                std::cout << "YES\n";
+                std::cout << "YES"<<std::endl;
             } else {
-                std::cout << "NO\n";
+                std::cout << "NO"<<std::endl;
             }
         }
         queries--;
@@ -132,4 +130,3 @@ int main() {
 
     return 0;
 }
-
