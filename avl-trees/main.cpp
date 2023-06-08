@@ -1,44 +1,39 @@
+
 #include <algorithm>
 #include <iostream>
 
-class Node {
- public:
-  int data;
-  int height;
-  Node* left_child;
-  Node* right_child;
-  explicit Node(int key);
-};
-
-Node::Node(int key) {
-  data = key;
-  height = 1;
-  left_child = nullptr;
-  right_child = nullptr;
-}
-
+template <class T, class TLess = std::less<T>>
 class AVLTree {
  private:
+  class Node {
+   public:
+    T data;
+    int height;
+    Node* left_child;
+    Node* right_child;
+    explicit Node(const T& key)
+        : data(key), height(1), left_child(nullptr), right_child(nullptr) {}
+  };
+
   Node* root_;
+  TLess comparator_;
 
  public:
-  AVLTree();
-  ~AVLTree();
+  AVLTree() : root_(nullptr) {}
+  ~AVLTree() { DestroyTree(root_); }
   void DestroyTree(Node* p);
-  static int Height(Node* p);
-  static int BalanceFactor(Node* p);
-  static Node* RotateLeft(Node* p);
-  static Node* RotateRight(Node* p);
-  Node* Insert(Node* p, int key);
-  static int Next(Node* p, int key);
+  int Height(Node* p);
+  int BalanceFactor(Node* p);
+  Node* RotateLeft(Node* p);
+  Node* RotateRight(Node* p);
+  Node* Insert(Node* p, const T& key);
+  T Next(Node* p, const T& key);
   Node* GetRoot() { return root_; }
-  void SetRoot(Node* node) { root_ = node; }  // Added function to set the root
+  void SetRoot(Node* node) { root_ = node; }
 };
 
-AVLTree::AVLTree() { root_ = nullptr; }
-AVLTree::~AVLTree() { DestroyTree(root_); }
-
-void AVLTree::DestroyTree(Node* p) {
+template <class T, class TLess>
+void AVLTree<T, TLess>::DestroyTree(Node* p) {
   if (p != nullptr) {
     DestroyTree(p->left_child);
     DestroyTree(p->right_child);
@@ -46,7 +41,8 @@ void AVLTree::DestroyTree(Node* p) {
   }
 }
 
-int AVLTree::Height(Node* p) {
+template <class T, class TLess>
+int AVLTree<T, TLess>::Height(Node* p) {
   if (p == nullptr) {
     return 0;
   }
@@ -58,7 +54,8 @@ int AVLTree::Height(Node* p) {
   return std::max(height_left, height_right) + 1;
 }
 
-int AVLTree::BalanceFactor(Node* p) {
+template <class T, class TLess>
+int AVLTree<T, TLess>::BalanceFactor(Node* p) {
   if (p == nullptr) {
     return 0;
   }
@@ -70,7 +67,8 @@ int AVLTree::BalanceFactor(Node* p) {
   return hl - hr;
 }
 
-Node* AVLTree::RotateRight(Node* p) {
+template <class T, class TLess>
+typename AVLTree<T, TLess>::Node* AVLTree<T, TLess>::RotateRight(Node* p) {
   Node* left_child_temp = p->left_child;
   Node* right_grandchild = left_child_temp->right_child;
   p->left_child = right_grandchild;
@@ -84,7 +82,8 @@ Node* AVLTree::RotateRight(Node* p) {
   return left_child_temp;
 }
 
-Node* AVLTree::RotateLeft(Node* p) {
+template <class T, class TLess>
+typename AVLTree<T, TLess>::Node* AVLTree<T, TLess>::RotateLeft(Node* p) {
   Node* right_child_temp = p->right_child;
   Node* left_grandchild = right_child_temp->left_child;
   p->right_child = left_grandchild;
@@ -98,14 +97,16 @@ Node* AVLTree::RotateLeft(Node* p) {
   return right_child_temp;
 }
 
-Node* AVLTree::Insert(Node* p, int key) {
+template <class T, class TLess>
+typename AVLTree<T, TLess>::Node* AVLTree<T, TLess>::Insert(Node* p,
+                                                            const T& key) {
   if (p == nullptr) {
     return new Node(key);
   }
 
-  if (key < p->data) {
+  if (comparator_(key, p->data)) {
     p->left_child = Insert(p->left_child, key);
-  } else if (key > p->data) {
+  } else if (comparator_(p->data, key)) {
     p->right_child = Insert(p->right_child, key);
   }
 
@@ -126,25 +127,29 @@ Node* AVLTree::Insert(Node* p, int key) {
   return p;
 }
 
-int AVLTree::Next(Node* p, int key) {
-  int next_value = -1;
-
+template <class T, class TLess>
+T AVLTree<T, TLess>::Next(Node* p, const T& key) {
+  T next_value = T();
+  bool found = false;
   while (p != nullptr) {
-    if (p->data >= key) {
+    if (!comparator_(p->data, key)) {
       next_value = p->data;
+      found = true;
       p = p->left_child;
     } else {
       p = p->right_child;
     }
   }
-
+  if (!found) {
+    return -1;
+  }
   return next_value;
 }
 
 int main() {
   int queries;
   std::cin >> queries;
-  AVLTree avltree;
+  AVLTree<int> avltree;
   int last_result = 0;
   for (int i = 0; i < queries; i++) {
     char operation;
