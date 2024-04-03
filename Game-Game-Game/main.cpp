@@ -2,7 +2,6 @@
 #include <vector>
 #include <climits>
 
-using namespace std;
 
 int solveTabulation(int n){
     std::vector<std::vector<int>>dp (n+2, std::vector<int>(n+2,0));
@@ -13,7 +12,7 @@ int solveTabulation(int n){
             }else{
                 int max_cost=INT_MAX;
                 for (int i =start; i <end ; i++) {
-                    max_cost=min(max_cost, i+ max(dp[start][i-1],dp[i+1][end]));
+                    max_cost=std::min(max_cost, i+ std::max(dp[start][i-1],dp[i+1][end]));
                 }
                 dp[start][end]=max_cost;
             }
@@ -23,10 +22,9 @@ int solveTabulation(int n){
     return dp[1][n];
 }
 
-
 int main() {
     int n;
-    cin >> n;
-    cout <<solveTabulation(n) <<"\n";
+    std::cin >> n;
+    std::cout <<solveTabulation(n) <<"\n";
     return 0;
 }
