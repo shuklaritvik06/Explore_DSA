@@ -1,0 +1,10 @@
+It doesn't seem too difficult to convert a string to a Z-function, as we all know. But can you do it vice versa? Well let's see:
+
+In this exercise, you need to find the string with the smallest lexicographical order constructed from the given Z-function in the alphabet a-z.
+
+
+Sample
+
+Input:  5 3 2 1 0
+
+Output: aaaab
